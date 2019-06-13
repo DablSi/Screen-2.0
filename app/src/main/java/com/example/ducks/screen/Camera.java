@@ -365,7 +365,7 @@ public class Camera extends AppCompatActivity {
                     .build();
             Service service = retrofit.create(Service.class);
 
-            Call<Void> call = service.putDevice(android_id, MainActivity.room, t);
+            Call<Integer> call = service.putDevice(android_id, MainActivity.room, t);
             try {
                 call.execute(); //отправка времени фотографирования на сервер
                 Log.d("SEND_AND_RETURN", "" + (t - (System.currentTimeMillis() + (int) Sync.deltaT)));
