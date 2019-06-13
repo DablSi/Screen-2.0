@@ -3,22 +3,26 @@ package com.example.ducks.screen;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.*;
 import android.media.MediaMetadataRetriever;
-import android.media.MediaPlayer;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.PowerManager;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.SimpleExoPlayer;
+import com.google.android.exoplayer2.source.MediaSource;
+import com.google.android.exoplayer2.source.ProgressiveMediaSource;
+import com.google.android.exoplayer2.upstream.DataSource;
+import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
+import com.google.android.exoplayer2.util.Util;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
@@ -33,10 +37,9 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     private float mDisplayWidth;
     private float mDisplayHeight;
     static int ax, ay, bx, by;
-    // MediaPlayer для проигрывания видео
-    static MediaPlayer mMediaPlayer;
     private TextureView mTextureView;
     static String path;
+    public static SimpleExoPlayer player;
 
 
     @Override
@@ -83,7 +86,6 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
 
         mTextureView = findViewById(R.id.textureView);
         mTextureView.setSurfaceTextureListener(this);
-        FrameLayout rootView = findViewById(R.id.rootView);
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
         mDisplayWidth = size.x;
@@ -92,16 +94,16 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
         updateTextureViewSize();
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (mMediaPlayer != null) {
-            // Освобождаем ресурсы
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
-    }
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//        if (mMediaPlayer != null) {
+//            // Освобождаем ресурсы
+//            mMediaPlayer.stop();
+//            mMediaPlayer.release();
+//            mMediaPlayer = null;
+//        }
+//    }
 
     //получение размеров видеофайла
     private void calculateVideoSize() {
@@ -148,26 +150,19 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                         1);
             } //получение разрешений
 
-            mMediaPlayer = new MediaPlayer();
+            player = ExoPlayerFactory.newSimpleInstance(Video.this);
+            player.setVideoSurface(surface);
 
-            FileInputStream fileInputStream;
             try {
-                fileInputStream = new FileInputStream(path);
-                mMediaPlayer.setDataSource(fileInputStream.getFD());
-                fileInputStream.close();
-                mMediaPlayer.prepare();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
+                DataSource.Factory dataSourceFactory = new DefaultDataSourceFactory(Video.this,
+                        Util.getUserAgent(Video.this, "Exoplayer"));
+                MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
+                        .createMediaSource(Uri.parse(path));
+                player.prepare(videoSource);
+
+            } catch (Exception e) {
                 e.printStackTrace();
             }
-            //загрузка видео
-
-            mMediaPlayer.setSurface(surface);
-            mMediaPlayer.setLooping(true);
-
-            mMediaPlayer.prepareAsync();
-            //обязательно вызывается, если используешь конструктор для создания медиаплеера
 
         } catch (IllegalArgumentException e) {
             Log.d(TAG, e.getMessage());
@@ -175,7 +170,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
             Log.d(TAG, e.getMessage());
         } catch (IllegalStateException e) {
             e.printStackTrace();
-        } catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

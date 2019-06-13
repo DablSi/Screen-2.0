@@ -28,7 +28,6 @@ import java.util.TimerTask;
 
 public class Search extends AppCompatActivity {
     private RelativeLayout relativeLayout;
-    boolean isClicked = false, isTrue = true;
     public static String URL = "http://192.168.1.2:8080";
     private String android_id;
     private int color1, color2;
@@ -195,8 +194,8 @@ public class Search extends AppCompatActivity {
                         timer.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                if (Video.mMediaPlayer != null) {
-                                    Video.mMediaPlayer.start();
+                                if (Video.player != null) {
+                                    Video.player.setPlayWhenReady(true);
                                 } else {
                                     runOnUiThread(new Runnable() {
                                         @Override
@@ -213,8 +212,8 @@ public class Search extends AppCompatActivity {
                         timer2.schedule(new TimerTask() {
                             @Override
                             public void run() {
-                                if (Video.mMediaPlayer != null) {
-                                    Video.mMediaPlayer.seekTo(10);
+                                if (Video.player != null) {
+                                    Video.player.seekTo(10);
                                 }
                             }
                         }, timeStart - (System.currentTimeMillis() + (int) Sync.deltaT) + 10);

@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 Response<Integer> integerResponse = integerCall.execute();
                 room = integerResponse.body(); //получение номера комнаты
-                Call<Void> call = service.putDevice(android_id, room, null);
+                Call<Integer> call = service.putDevice(android_id, room, null);
                 call.execute(); //создание комнаты
                 runOnUiThread(new Runnable() {
                     @Override
