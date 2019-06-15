@@ -16,7 +16,9 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.Toast;
+import com.google.android.exoplayer2.ExoPlayer;
 import com.google.android.exoplayer2.ExoPlayerFactory;
+import com.google.android.exoplayer2.Player;
 import com.google.android.exoplayer2.SimpleExoPlayer;
 import com.google.android.exoplayer2.source.MediaSource;
 import com.google.android.exoplayer2.source.ProgressiveMediaSource;
@@ -26,7 +28,6 @@ import com.google.android.exoplayer2.util.Util;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Video extends Activity implements TextureView.SurfaceTextureListener {
@@ -40,6 +41,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     private TextureView mTextureView;
     static String path;
     public static SimpleExoPlayer player;
+    private static boolean second = false;
 
 
     @Override
@@ -160,6 +162,25 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                         .createMediaSource(Uri.parse(path));
                 player.prepare(videoSource);
 
+                player.setPlayWhenReady(true);
+                player.addListener(new Player.EventListener() {
+                    @Override
+                    public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                        if (playbackState == ExoPlayer.STATE_READY) {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    if (!second) {
+                                        second = true;
+                                        player.setPlayWhenReady(false);
+                                        player.seekTo(0);
+                                    }
+                                }
+                            });
+                        }
+                    }
+                });
+
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -185,6 +206,12 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        player.release();
     }
 
     @Override

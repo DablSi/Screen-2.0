@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+import com.google.android.exoplayer2.ExoPlayer;
+import com.google.android.exoplayer2.Player;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import okhttp3.OkHttpClient;
@@ -28,7 +30,7 @@ import java.util.TimerTask;
 
 public class Search extends AppCompatActivity {
     private RelativeLayout relativeLayout;
-    public static String URL = "http://192.168.1.2:8080";
+    public static String URL = "https://cloud.itx.ru:444/Server-0.0.1-SNAPSHOT/";
     private String android_id;
     private int color1, color2;
     public static Integer room;
@@ -36,6 +38,7 @@ public class Search extends AppCompatActivity {
     private long timeStart = 0;
     private PowerManager.WakeLock wakeLock;
     private Retrofit retrofit;
+    public long l;
     private Service service;
 
     //для полноэкранного режима
@@ -195,7 +198,23 @@ public class Search extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (Video.player != null) {
+                                    l = System.currentTimeMillis();
+                                    Video.player.seekTo(0);
                                     Video.player.setPlayWhenReady(true);
+                                    Video.player.addListener(new Player.EventListener() {
+                                        @Override
+                                        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
+                                            if (playbackState == ExoPlayer.STATE_READY) {
+                                                l = System.currentTimeMillis() - l;
+                                                runOnUiThread(new Runnable() {
+                                                    @Override
+                                                    public void run() {
+                                                        Toast.makeText(Search.this, "" + l, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        }
+                                    });
                                 } else {
                                     runOnUiThread(new Runnable() {
                                         @Override
