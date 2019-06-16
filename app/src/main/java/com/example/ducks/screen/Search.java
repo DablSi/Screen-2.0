@@ -38,7 +38,7 @@ public class Search extends AppCompatActivity {
     private long timeStart = 0;
     private PowerManager.WakeLock wakeLock;
     private Retrofit retrofit;
-    public long l;
+    public static long l;
     private Service service;
 
     //для полноэкранного режима
@@ -199,7 +199,6 @@ public class Search extends AppCompatActivity {
                             public void run() {
                                 if (Video.player != null) {
                                     l = System.currentTimeMillis();
-                                    Video.player.seekTo(0);
                                     Video.player.setPlayWhenReady(true);
                                     Video.player.addListener(new Player.EventListener() {
                                         @Override
@@ -227,15 +226,6 @@ public class Search extends AppCompatActivity {
                             }
                         }, timeStart - (System.currentTimeMillis() + (int) Sync.deltaT));
 
-                        Timer timer2 = new Timer();
-                        timer2.schedule(new TimerTask() {
-                            @Override
-                            public void run() {
-                                if (Video.player != null) {
-                                    Video.player.seekTo(10);
-                                }
-                            }
-                        }, timeStart - (System.currentTimeMillis() + (int) Sync.deltaT) + 10);
                         while (Video.path == null) {
                             Thread.sleep(150);
                         }

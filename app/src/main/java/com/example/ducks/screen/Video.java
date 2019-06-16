@@ -30,6 +30,8 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import static com.example.ducks.screen.Search.l;
+
 public class Video extends Activity implements TextureView.SurfaceTextureListener {
     // Log тэг
     private static final String TAG = Video.class.getName();
@@ -37,7 +39,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     private float mVideoHeight;
     private float mDisplayWidth;
     private float mDisplayHeight;
-    static int ax, ay, bx, by;
+    static float ax, ay, bx, by;
     private TextureView mTextureView;
     static String path;
     public static SimpleExoPlayer player;
@@ -49,10 +51,12 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.texture_video_crop);
         calculateVideoSize();
-        ax = ax * ((int) mVideoWidth / 100);
-        ay = ay * ((int) mVideoHeight / 100);
-        bx = bx * ((int) mVideoWidth / 100);
-        by = by * ((int) mVideoHeight / 100);
+        if(second) {
+            ax = ax * (mVideoWidth / (float) 100);
+            ay = ay * (mVideoHeight / (float) 100);
+            bx = bx * (mVideoWidth / (float) 100);
+            by = by * (mVideoHeight / (float) 100);
+        }
         //перевод координат из процентов
         initView();
     }
@@ -162,18 +166,23 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                         .createMediaSource(Uri.parse(path));
                 player.prepare(videoSource);
 
-                player.setPlayWhenReady(true);
+                Thread.sleep(100);
+
+                if (!second)
+                    player.setPlayWhenReady(true);
                 player.addListener(new Player.EventListener() {
                     @Override
                     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
                         if (playbackState == ExoPlayer.STATE_READY) {
+                            l = System.currentTimeMillis() - l;
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
+                                    if (second)
+                                        Toast.makeText(Video.this, "" + l, Toast.LENGTH_SHORT).show();
                                     if (!second) {
                                         second = true;
-                                        player.setPlayWhenReady(false);
-                                        player.seekTo(0);
+                                        recreate();
                                     }
                                 }
                             });
