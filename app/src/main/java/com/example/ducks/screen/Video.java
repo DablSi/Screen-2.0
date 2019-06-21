@@ -25,12 +25,17 @@ import com.google.android.exoplayer2.source.ProgressiveMediaSource;
 import com.google.android.exoplayer2.upstream.DataSource;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static com.example.ducks.screen.Search.l;
+import static com.example.ducks.screen.MainActivity.room;
+import static com.example.ducks.screen.Search.*;
 
 public class Video extends Activity implements TextureView.SurfaceTextureListener {
     // Log тэг
@@ -51,11 +56,11 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.texture_video_crop);
         calculateVideoSize();
-        if(second) {
-            ax = ax * (mVideoWidth / (float) 100);
-            ay = ay * (mVideoHeight / (float) 100);
-            bx = bx * (mVideoWidth / (float) 100);
-            by = by * (mVideoHeight / (float) 100);
+        if (second) {
+            ax *= mVideoWidth / (float) 100;
+            ay *= mVideoHeight / (float) 100;
+            bx *= mVideoWidth / (float) 100;
+            by *= mVideoHeight / (float) 100;
         }
         //перевод координат из процентов
         initView();
@@ -179,7 +184,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                                 @Override
                                 public void run() {
                                     if (second)
-                                        Toast.makeText(Video.this, "" + l, Toast.LENGTH_SHORT).show();
+                                        new getPause().start();
                                     if (!second) {
                                         second = true;
                                         recreate();
@@ -234,5 +239,38 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surfaceTexture) {
+    }
+
+    class getPause extends Thread {
+        @Override
+        public void run() {
+            super.run();
+            Retrofit retrofit = new Retrofit.Builder()
+                    .baseUrl(URL)
+                    .client(getUnsafeOkHttpClient().build())
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
+            while (true) {
+                Call<Boolean> call = retrofit.create(Service.class).getPause(Search.room);
+                try {
+                    Response<Boolean> response = call.execute();
+                    Boolean pause = response.body();
+                    //получение паузы
+
+                    if (pause != null && pause == player.getPlayWhenReady()) {
+                        if (pause) {
+                            player.setPlayWhenReady(false);
+                            player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart);
+                        }
+                        else{
+                           player.setPlayWhenReady(true);
+                        }
+                    }
+                    Thread.sleep(50);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }

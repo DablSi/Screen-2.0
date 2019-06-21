@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         if (requestCode == REQUEST_START_CAMERA_ACTIVITY && resultCode == REQUEST_START_CAMERA_ACTIVITY) {
-            startActivity(new Intent(MainActivity.this, Timer.class));
+            startActivity(new Intent(MainActivity.this, Control.class));
         }
     }
 

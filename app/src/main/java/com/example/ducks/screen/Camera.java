@@ -424,8 +424,8 @@ public class Camera extends AppCompatActivity {
 
             !!!этот код используется только для тестирования!!!*/
 
-            bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 3, bitmap.getHeight() / 3, false);
-            bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap2.getWidth() / 3, bitmap2.getHeight() / 3, false);
+            bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4, false);
+            bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap2.getWidth() / 4, bitmap2.getHeight() / 4, false);
             //пропорциональное уменьшение размеров фотографий для более быстрой их обработки
 
             Bitmap bitmap3 = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
@@ -561,7 +561,7 @@ public class Camera extends AppCompatActivity {
                 }
             };
 
-            int left = 0, right = 0, up = 0, down = 0;
+            float left = 0, right = 0, up = 0, down = 0;
 
             for (int i = 0; i < points.size(); i++) {
                 for (int j = 0; j <= points.get(i).size(); j++) {

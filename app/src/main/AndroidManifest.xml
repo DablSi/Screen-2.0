@@ -21,6 +21,8 @@
             android:theme="@style/Theme.ScreenTheme"
             android:usesCleartextTraffic="true"
             tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".Control">
+        </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
@@ -35,7 +37,6 @@
 
         <activity android:name=".Timer">
         </activity>
-
         <activity android:name=".Video">
         </activity>
 

@@ -30,12 +30,12 @@ import java.util.TimerTask;
 
 public class Search extends AppCompatActivity {
     private RelativeLayout relativeLayout;
-    public static String URL = "https://cloud.itx.ru:444/Server-0.0.1-SNAPSHOT/";
+    public static String URL = "http://192.168.1.8:8080";
     private String android_id;
     private int color1, color2;
     public static Integer room;
     private Response<ResponseBody> responseBody;
-    private long timeStart = 0;
+    public static long timeStart = 0;
     private PowerManager.WakeLock wakeLock;
     private Retrofit retrofit;
     public static long l;
@@ -200,20 +200,6 @@ public class Search extends AppCompatActivity {
                                 if (Video.player != null) {
                                     l = System.currentTimeMillis();
                                     Video.player.setPlayWhenReady(true);
-                                    Video.player.addListener(new Player.EventListener() {
-                                        @Override
-                                        public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
-                                            if (playbackState == ExoPlayer.STATE_READY) {
-                                                l = System.currentTimeMillis() - l;
-                                                runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        Toast.makeText(Search.this, "" + l, Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    });
                                 } else {
                                     runOnUiThread(new Runnable() {
                                         @Override
