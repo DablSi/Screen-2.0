@@ -19,7 +19,7 @@ public interface Service {
     //Camera
     @Multipart
     @POST("/Server-0.0.2-SNAPSHOT/post/coords")
-    public Call<Void> putCoords(@Part("room") int room, @Part("x1") float x1, @Part("y1") float y1, @Part("x2") float x2, @Part("y2") float y2, @Part("color") int[] color);
+    public Call<Void> putCoords(@Part("room") int room, @Part("x1") double x1, @Part("y1") double y1, @Part("x2") double x2, @Part("y2") double y2, @Part("color") int[] color);
 
     //Получить координаты
     //Video
@@ -98,9 +98,9 @@ public interface Service {
 
     //Класс координат
     class Coords {
-        public float x1, y1, x2, y2;
+        public double x1, y1, x2, y2;
 
-        public Coords(float x1, float y1, float x2, float y2) {
+        public Coords(double x1, double y1, double x2, double y2) {
             this.x1 = x1;
             this.x2 = x2;
             this.y1 = y1;

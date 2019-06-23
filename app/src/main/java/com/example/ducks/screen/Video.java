@@ -40,11 +40,11 @@ import static com.example.ducks.screen.Search.*;
 public class Video extends Activity implements TextureView.SurfaceTextureListener {
     // Log тэг
     private static final String TAG = Video.class.getName();
-    private float mVideoWidth;
-    private float mVideoHeight;
-    private float mDisplayWidth;
-    private float mDisplayHeight;
-    static float ax, ay, bx, by;
+    private double mVideoWidth;
+    private double mVideoHeight;
+    private double mDisplayWidth;
+    private double mDisplayHeight;
+    static double ax, ay, bx, by;
     private TextureView mTextureView;
     static String path;
     public static SimpleExoPlayer player;
@@ -57,10 +57,10 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
         setContentView(R.layout.texture_video_crop);
         calculateVideoSize();
         if (!second) {
-            ax *= mVideoWidth / (float) 100;
-            ay *= mVideoHeight / (float) 100;
-            bx *= mVideoWidth / (float) 100;
-            by *= mVideoHeight / (float) 100;
+            ax *= mVideoWidth / (double) 100;
+            ay *= mVideoHeight / (double) 100;
+            bx *= mVideoWidth / (double) 100;
+            by *= mVideoHeight / (double) 100;
         }
         //перевод координат из процентов
         initView();
@@ -139,12 +139,12 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
 
     //обрезка видео путем изменения размеров TextureView
     private void updateTextureViewSize() {
-        float scaleX = mDisplayWidth / mVideoWidth, scaleY = mDisplayHeight / mVideoHeight;
-        float scale = mDisplayHeight / Math.abs(by - ay);
+        double scaleX = mDisplayWidth / mVideoWidth, scaleY = mDisplayHeight / mVideoHeight;
+        double scale = mDisplayHeight / Math.abs(by - ay);
         Matrix matrix = new Matrix();
         matrix.reset();
-        matrix.setScale(scale / scaleX, scale / scaleY);
-        matrix.postTranslate(-scale * ax, -scale * ay);
+        matrix.setScale((float) (scale / scaleX), (float) (scale / scaleY));
+        matrix.postTranslate((float) (-scale * ax), (float) (-scale * ay));
         mTextureView.setLayoutParams(new FrameLayout.LayoutParams((int) mDisplayWidth, (int) mDisplayHeight));
         mTextureView.setTransform(matrix);
     }

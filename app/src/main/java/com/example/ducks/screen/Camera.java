@@ -561,7 +561,7 @@ public class Camera extends AppCompatActivity {
                 }
             };
 
-            float left = 0, right = 0, up = 0, down = 0;
+            double left = 0, right = 0, up = 0, down = 0;
 
             for (int i = 0; i < points.size(); i++) {
                 for (int j = 0; j <= points.get(i).size(); j++) {
@@ -586,10 +586,10 @@ public class Camera extends AppCompatActivity {
                         up = linkedList.getFirst().y;
                         down = linkedList.getLast().y;
 
-                        left /= ((float) bitmap.getWidth() / (float) 100);
-                        up /= ((float) bitmap.getHeight() / (float) 100);
-                        right /= ((float) bitmap.getWidth() / (float) 100);
-                        down /= ((float) bitmap.getHeight() / (float) 100);
+                        left /= ((double) bitmap.getWidth() / (double) 100);
+                        up /= ((double) bitmap.getHeight() / (double) 100);
+                        right /= ((double) bitmap.getWidth() / (double) 100);
+                        down /= ((double) bitmap.getHeight() / (double) 100);
                         //перевод в проценты
 
                         Log.d("Coords", left + ";" + up + " " + right + ";" + down);
