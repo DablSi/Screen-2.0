@@ -12,67 +12,67 @@ public interface Service {
 
     //Добавить девайс
     @Multipart
-    @POST("/post")
+    @POST("/Server-0.0.2-SNAPSHOT/post")
     public Call<Integer> putDevice(@Part("device") String device, @Part("room") Integer room, @Part("date") Long date);
 
     //Добавить координаты
     //Camera
     @Multipart
-    @POST("/post/coords")
+    @POST("/Server-0.0.2-SNAPSHOT/post/coords")
     public Call<Void> putCoords(@Part("room") int room, @Part("x1") float x1, @Part("y1") float y1, @Part("x2") float x2, @Part("y2") float y2, @Part("color") int[] color);
 
     //Получить координаты
     //Video
-    @GET("/get/coords/{device}")
+    @GET("/Server-0.0.2-SNAPSHOT/get/coords/{device}")
     public Call<Coords> getCoords(@Path("device") String device);
 
     //Получить время запуска
     //Search +
-    @GET("/get/{device}")
+    @GET("/Server-0.0.2-SNAPSHOT/get/{device}")
     public Call<Long> getTime(@Path("device") String device);
     
     //Получить цвет
     //Search +
-    @GET("/get/color/{device}")
+    @GET("/Server-0.0.2-SNAPSHOT/get/color/{device}")
     public Call<int[]> getColor(@Path("device") String device);
 
     //Получение номера комнаты
     //Camera +
-    @GET("/get/room")
+    @GET("/Server-0.0.2-SNAPSHOT/get/room")
     public Call<Integer> getRoom();
 
-    @GET(value = "/download/{room}")
+    @GET(value = "/Server-0.0.2-SNAPSHOT/download/{room}")
     @Streaming
     public Call<ResponseBody> getFile(@Path("room") int room);
 
     @Multipart
-    @POST(value = "/upload")
+    @POST(value = "/Server-0.0.2-SNAPSHOT/upload")
     public Call<Void> uploadVideo(@Part MultipartBody.Part video, @Part("room") int room);
 
     //Получение массива цветов
-    @GET("/get/colors")
+    @GET("/Server-0.0.2-SNAPSHOT/get/colors")
     public Call<int[]> getColors();
 
     //Добавить время запуска видео
     @Multipart
-    @POST("/post/startVideo")
+    @POST("/Server-0.0.2-SNAPSHOT/post/startVideo")
     public Call<Void> putStartVideo(@Part("room") Integer room, @Part("date") Long date);
 
     //Получить время запуска видео
-    @GET("/get/startVideo/{device}")
+    @GET("/Server-0.0.2-SNAPSHOT/get/startVideo/{device}")
     public Call<Long> getStartVideo(@Path("device") String device);
 
     //Получение индексов цветов
-    @GET("/get/indexes/{room}")
+    @GET("/Server-0.0.2-SNAPSHOT/get/indexes/{room}")
     public Call<int[]> getIndexes(@Path("room") int room);
 
     //Поставить паузу || Продолжить воспроизведение
     @Multipart
-    @POST("/post/pause")
+    @POST("/Server-0.0.2-SNAPSHOT/post/pause")
     public Call<Void> setPause(@Part("room") int room, @Part("pause") boolean pause);
 
     //Получение массива цветов
-    @GET("/get/pause/{room}")
+    @GET("/Server-0.0.2-SNAPSHOT/get/pause/{room}")
     public Call<Boolean> getPause(@Path("room") int room);
 
     //Данные каждого гаджета

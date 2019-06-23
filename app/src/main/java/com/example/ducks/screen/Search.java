@@ -30,7 +30,7 @@ import java.util.TimerTask;
 
 public class Search extends AppCompatActivity {
     private RelativeLayout relativeLayout;
-    public static String URL = "http://192.168.1.8:8080";
+    public static String URL = "https://cloud.itx.ru:444/Server-0.0.2-SNAPSHOT/";
     private String android_id;
     private int color1, color2;
     public static Integer room;
