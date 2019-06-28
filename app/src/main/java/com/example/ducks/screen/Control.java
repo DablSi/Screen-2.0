@@ -38,29 +38,10 @@ public class Control extends AppCompatActivity {
                     if (!isStarted) {
                         new SendTime().start();
                         isStarted = true;
-                        for(int i = 0; i < 2; i++) {
-                            java.util.Timer timer = new Timer();
-                            timer.schedule(new TimerTask() {
-                                @Override
-                                public void run() {
-                                    isPaused = true;
-                                    new SetPause().start();
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
-                                    isPaused = false;
-                                    new SetPause().start();
-                                }
-                            }, 1000);
-                        }
-                    }
-                    else{
+                    } else {
                         new SetPause().start();
                     }
-                }
-                else {
+                } else {
                     imageButton.setImageResource(R.drawable.play);
                     isPaused = true;
                     new SetPause().start();

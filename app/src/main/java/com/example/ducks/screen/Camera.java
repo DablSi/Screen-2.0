@@ -10,6 +10,7 @@ import android.graphics.Bitmap.Config;
 import android.hardware.camera2.*;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.ImageReader;
+import android.media.MediaMetadataRetriever;
 import android.os.*;
 import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
@@ -29,6 +30,7 @@ import java.util.*;
 import static com.example.ducks.screen.MainActivity.REQUEST_START_CAMERA_ACTIVITY;
 import static com.example.ducks.screen.MainActivity.android_id;
 import static com.example.ducks.screen.Search.*;
+import static com.example.ducks.screen.Video.path;
 
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class Camera extends AppCompatActivity {
@@ -45,16 +47,15 @@ public class Camera extends AppCompatActivity {
     private CameraCaptureSession cameraCaptureSession;
     private CaptureRequest.Builder captureRequestBuilder;
     private CaptureRequest captureRequest;
-    private ImageReader mImageReader;
     private Bitmap bitmap, bitmap2;
     private Size previewSize;
     private long t;
     private OrientationListener orientationListener;
     private int rotate;
-    private int xs = 640, ys = 360;
     private FloatingActionButton floatingActionButton;
-    public static final int _R = 4;
+    public static int _R = 3;
     public static final int UNKNOWN = 0xFFFF00FF;
+    private double videoHeight, videoWidth;
 
     //для полноэкранного режима
     private void hideSystemUI() {
@@ -72,7 +73,7 @@ public class Camera extends AppCompatActivity {
 
     //рассчитывает оптимальный размеры для TextureView камеры
     private Size chooseOptimalSize(Size[] outputSizes, int width, int height) {
-        double preferredRatio = height / (double) width;
+        double preferredRatio = (double) height / (double) width;
         Size currentOptimalSize = outputSizes[0];
         double currentOptimalRatio = currentOptimalSize.getWidth() / (double) currentOptimalSize.getHeight();
         for (Size currentSize : outputSizes) {
@@ -235,6 +236,24 @@ public class Camera extends AppCompatActivity {
         ActivityCompat.requestPermissions(Camera.this, new String[]{Manifest.permission.CAMERA,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE}, CAMERA_REQUEST_CODE);
         //запрос разрешений на запись файлов и доступ к камере
+
+        calculateVideoSize();
+    }
+
+    private void calculateVideoSize() {
+        try {
+            FileDescriptor fd = new FileInputStream(path).getFD();
+            MediaMetadataRetriever metaRetriever = new MediaMetadataRetriever();
+            metaRetriever.setDataSource(fd);
+            String height = metaRetriever
+                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_HEIGHT);
+            String width = metaRetriever
+                    .extractMetadata(MediaMetadataRetriever.METADATA_KEY_VIDEO_WIDTH);
+            videoHeight = Float.parseFloat(height) / 8;
+            videoWidth = Float.parseFloat(width) / 8;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -317,7 +336,7 @@ public class Camera extends AppCompatActivity {
         @Override
         public void run() {
             SendThread sendThread = new SendThread();
-            t = System.currentTimeMillis() + (int) Sync.deltaT + 2500;
+            t = System.currentTimeMillis() + (int) Sync.deltaT + 3000;
             sendThread.start();
             //отправка времени начала фотографирования на сервер
             java.util.Timer timer = new java.util.Timer();
@@ -416,17 +435,33 @@ public class Camera extends AppCompatActivity {
             bitmap2 = Bitmap.createBitmap(bitmap2, 0, 0, bitmap2.getWidth(), bitmap2.getHeight(), matrix, true);
             //переворот фотографии в соответствии с ориентацией телефона
 
-            bitmapUpload(bitmap, 1);
-            bitmapUpload(bitmap2, 2);
+
 
             /*bitmap = bitmapDownload(1);
             bitmap2 = bitmapDownload(2);
 
             !!!этот код используется только для тестирования!!!*/
 
-            bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 4, bitmap.getHeight() / 4, false);
-            bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap2.getWidth() / 4, bitmap2.getHeight() / 4, false);
+            bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 8, bitmap.getHeight() / 8, false);
+            bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap2.getWidth() / 8, bitmap2.getHeight() / 8, false);
             //пропорциональное уменьшение размеров фотографий для более быстрой их обработки
+
+
+            if (bitmap.getWidth() >= videoWidth || bitmap.getHeight() >= videoHeight) {
+                double ratioX = (float) (bitmap.getWidth() / videoWidth),
+                        ratioY = (float) (bitmap.getHeight() / videoHeight);
+
+                int k = (int) (ratioX > ratioY ? ratioX + 1 : ratioY + 1);
+                videoWidth *= k;
+                videoHeight *= k;
+            }
+
+            Bitmap bit = Bitmap.createBitmap((int) videoWidth, (int) videoHeight, Config.ARGB_8888);
+            bitmap = overlay(bit, bitmap);
+            bitmap2 = overlay(bit, bitmap2);
+
+            bitmapUpload(bitmap, 1);
+            bitmapUpload(bitmap2, 2);
 
             Bitmap bitmap3 = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
             bitmap3 = bitmap3.copy(Bitmap.Config.ARGB_8888, true);
@@ -613,6 +648,14 @@ public class Camera extends AppCompatActivity {
 
     }
 
+    private Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
+        Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
+        Canvas canvas = new Canvas(bmOverlay);
+        canvas.drawBitmap(bmp1, new Matrix(), null);
+        canvas.drawBitmap(bmp2, (float) ((bmp1.getWidth() / 2) - (bmp2.getWidth() / 2)), (float) ((bmp1.getHeight() / 2) - (bmp2.getHeight() / 2)), null);
+        return bmOverlay;
+    }
+
     //реализация метода размыкания(Opening)
     //https://habr.com/ru/company/yandex/blog/254955/ - ресурс, который помог с этим разобраться
     public void denoise(Bitmap arr) {
@@ -684,13 +727,13 @@ public class Camera extends AppCompatActivity {
         int percentB = (int) ((double) B / ((double) (R + G + B) / (double) 100));
         //процентное соотношениие цветов
 
-        double deviation = 0.3; //% отклонения
+        double deviation = 0.2; //% отклонения
 
         if (R < 30 && G < 30 && B < 30) return Color.BLACK;
         if (R > 60 && G > 60 && B > 60) return Color.WHITE;
-        if (percentR > 50 && R > G + G * deviation && R > B + B * deviation) return Color.RED;
-        if (percentG > 50 && G > R + R * deviation && G > B + B * deviation) return Color.GREEN;
-        if (percentB > 50 && B > G + G * deviation && B > R + R * deviation) return Color.BLUE;
+        if (percentR > 40 && R > G + G * deviation && R > B + B * deviation) return Color.RED;
+        if (percentG > 40 && G > R + R * deviation && G > B + B * deviation) return Color.GREEN;
+        if (percentB > 40 && B > G + G * deviation && B > R + R * deviation) return Color.BLUE;
         // Цвет неизвестен
         return UNKNOWN;
     }

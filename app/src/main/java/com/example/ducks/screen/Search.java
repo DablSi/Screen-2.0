@@ -198,8 +198,12 @@ public class Search extends AppCompatActivity {
                             @Override
                             public void run() {
                                 if (Video.player != null) {
-                                    l = System.currentTimeMillis();
-                                    Video.player.setPlayWhenReady(true);
+                                    runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Video.player.setPlayWhenReady(true);
+                                        }
+                                    });
                                 } else {
                                     runOnUiThread(new Runnable() {
                                         @Override

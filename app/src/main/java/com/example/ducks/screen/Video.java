@@ -242,6 +242,8 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     }
 
     class getPause extends Thread {
+        boolean syncronized = false;
+
         @Override
         public void run() {
             super.run();
@@ -250,22 +252,36 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                     .client(getUnsafeOkHttpClient().build())
                     .addConverterFactory(GsonConverterFactory.create())
                     .build();
+
             while (true) {
                 Call<Boolean> call = retrofit.create(Service.class).getPause(Search.room);
                 try {
                     Response<Boolean> response = call.execute();
                     Boolean pause = response.body();
                     //получение паузы
-
-                    if (pause != null && pause == player.getPlayWhenReady()) {
-                        if (pause) {
-                            player.setPlayWhenReady(false);
-                            player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart);
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (pause != null) {
+                                if (pause == player.getPlayWhenReady()) {
+                                    if (pause) {
+                                        player.setPlayWhenReady(false);
+                                        player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart);
+                                    } else {
+                                        player.setPlayWhenReady(true);
+                                    }
+                                } else if (!pause && !syncronized) {
+                                    syncronized = true;
+                                    if (Math.abs(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 300) {
+                                        long delta = ((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition();
+                                        Log.e("TIME", "" + delta);
+                                        player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart + (delta < 0 ? -500 : 300));
+                                        syncronized = false;
+                                    }
+                                }
+                            }
                         }
-                        else{
-                           player.setPlayWhenReady(true);
-                        }
-                    }
+                    });
                     Thread.sleep(50);
                 } catch (Exception e) {
                     e.printStackTrace();
