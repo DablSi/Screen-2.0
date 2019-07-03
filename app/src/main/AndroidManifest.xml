@@ -21,7 +21,7 @@
             android:theme="@style/Theme.ScreenTheme"
             android:usesCleartextTraffic="true"
             tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".Control">
+        <activity android:name=".Steps">
         </activity>
         <activity android:name=".MainActivity">
             <intent-filter>
@@ -29,6 +29,10 @@
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+        <activity android:name=".Control">
+        </activity>
+        <activity android:name=".Main">
         </activity>
 
         <uses-library

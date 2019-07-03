@@ -13,7 +13,7 @@ import java.text.*;
 import java.util.Date;
 import java.util.Locale;
 
-import static com.example.ducks.screen.MainActivity.room;
+import static com.example.ducks.screen.Main.room;
 import static com.example.ducks.screen.Search.URL;
 import static com.example.ducks.screen.Search.getUnsafeOkHttpClient;
 

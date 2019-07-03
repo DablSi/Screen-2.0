@@ -46,4 +46,6 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
+    implementation 'com.github.baoyachi:StepView:1.9'
+    implementation 'com.ernestoyaquello.stepperform:vertical-stepper-form:0.9.9'
 }

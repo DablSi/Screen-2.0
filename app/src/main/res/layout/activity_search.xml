@@ -34,7 +34,7 @@
             android:clickable="true"
             android:focusable="true"
             app:backgroundTint="@color/colorPrimary"
-            app:srcCompat="@android:drawable/ic_menu_add"
+            app:srcCompat="@drawable/plus"
             android:id="@+id/floatingActionButton"/>
 
 </RelativeLayout>

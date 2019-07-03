@@ -9,7 +9,6 @@ import android.graphics.*;
 import android.graphics.Bitmap.Config;
 import android.hardware.camera2.*;
 import android.hardware.camera2.params.StreamConfigurationMap;
-import android.media.ImageReader;
 import android.media.MediaMetadataRetriever;
 import android.os.*;
 import android.support.annotation.RequiresApi;
@@ -27,8 +26,8 @@ import retrofit2.converter.gson.GsonConverterFactory;
 import java.io.*;
 import java.util.*;
 
-import static com.example.ducks.screen.MainActivity.REQUEST_START_CAMERA_ACTIVITY;
-import static com.example.ducks.screen.MainActivity.android_id;
+import static com.example.ducks.screen.Main.REQUEST_START_CAMERA_ACTIVITY;
+import static com.example.ducks.screen.Main.android_id;
 import static com.example.ducks.screen.Search.*;
 import static com.example.ducks.screen.Video.path;
 
@@ -179,7 +178,7 @@ public class Camera extends AppCompatActivity {
         orientationListener = new OrientationListener(Camera.this);
         //для возможности изменения ориентации фотографии без изменения ориентации активности
         floatingActionButton = findViewById(R.id.floatingActionButton);
-        if (MainActivity.room < 0) {
+        if (Main.room < 0) {
             Toast.makeText(Camera.this, "Произошла ошибка! Перезапустите приложение.", Toast.LENGTH_LONG).show();
             //на случай прерывания передачи видео на сервер
             //извините за хардкод
@@ -384,7 +383,7 @@ public class Camera extends AppCompatActivity {
                     .build();
             Service service = retrofit.create(Service.class);
 
-            Call<Integer> call = service.putDevice(android_id, MainActivity.room, t);
+            Call<Integer> call = service.putDevice(android_id, Main.room, t);
             try {
                 call.execute(); //отправка времени фотографирования на сервер
                 Log.d("SEND_AND_RETURN", "" + (t - (System.currentTimeMillis() + (int) Sync.deltaT)));
@@ -483,7 +482,7 @@ public class Camera extends AppCompatActivity {
                 e.printStackTrace();
             }
 
-            Call<int[]> indexCall = service.getIndexes(MainActivity.room);
+            Call<int[]> indexCall = service.getIndexes(Main.room);
             int[] indexes = new int[2];
             try {
                 Response<int[]> response = indexCall.execute();
@@ -631,7 +630,7 @@ public class Camera extends AppCompatActivity {
 
                         int[] ind = {i, j};
 
-                        Call<Void> call = service.putCoords(MainActivity.room, left, up, right, down, ind);
+                        Call<Void> call = service.putCoords(Main.room, left, up, right, down, ind);
                         try {
                             call.execute();
                         } catch (IOException e) {

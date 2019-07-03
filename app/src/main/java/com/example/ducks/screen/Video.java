@@ -34,7 +34,6 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import static com.example.ducks.screen.MainActivity.room;
 import static com.example.ducks.screen.Search.*;
 
 public class Video extends Activity implements TextureView.SurfaceTextureListener {

@@ -4,16 +4,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageButton;
-import android.widget.Toast;
 import retrofit2.Call;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
-import java.io.IOException;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import static com.example.ducks.screen.MainActivity.room;
+import static com.example.ducks.screen.Main.room;
 import static com.example.ducks.screen.Search.URL;
 import static com.example.ducks.screen.Search.getUnsafeOkHttpClient;
 

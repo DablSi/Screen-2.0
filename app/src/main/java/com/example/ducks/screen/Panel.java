@@ -42,8 +42,8 @@ public class Panel extends Fragment {
             @Override
             public void onClick(View v) {
                 select(button, textView);
-                if (!getActivity().getClass().getSimpleName().equals("MainActivity")) {
-                    Intent intent1 = new Intent(getContext(), MainActivity.class);
+                if (!getActivity().getClass().getSimpleName().equals("Main")) {
+                    Intent intent1 = new Intent(getContext(), Main.class);
                     startActivity(intent1);
                     unselect(button1, textView1);
                 }
@@ -65,7 +65,7 @@ public class Panel extends Fragment {
         //выбор активности поиска
 
         switch (getActivity().getClass().getSimpleName()) {
-            case "MainActivity":
+            case "Main":
                 select(button, textView);
                 break;
             case "Search":
@@ -79,7 +79,7 @@ public class Panel extends Fragment {
     public void onResume() {
         super.onResume();
         switch (getActivity().getClass().getSimpleName()) {
-            case "MainActivity":
+            case "Main":
                 select(button, textView);
                 unselect(button1, textView1);
                 break;
