@@ -18,7 +18,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.baoyachi.stepview.VerticalStepView;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.RequestBody;
@@ -42,6 +41,7 @@ public class Main extends AppCompatActivity {
     protected static String android_id;
     private VerticalStepView verticalStepView;
     private static int position = 0;
+    private LinkedList<String> source;
 
     //открывает проводник для выбора файла
     private void showFileChooser() {
@@ -108,6 +108,12 @@ public class Main extends AppCompatActivity {
                         public void run() {
                             Toast.makeText(Main.this, "Видео загрузилось", Toast.LENGTH_LONG).show();
                             position++;
+                            source.remove(1);
+                            source.add(1, "Ввести комнату на всех девайсах видеостены (" + room + ")");
+                            verticalStepView
+                                    .setStepsViewIndicatorComplectingPosition(position)
+                                    .setStepViewTexts(source)
+                                    .reverseDraw(false);
                         }
                     });
                 }
@@ -148,15 +154,10 @@ public class Main extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        new ServiceThread().execute();
-        if (PackageManager.PERMISSION_GRANTED != ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
-            ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
-                    1);
-        }
         verticalStepView = findViewById(R.id.steps);
-        LinkedList<String> source = new LinkedList<>();
+        source = new LinkedList<>();
         source.add("Выбрать видео");
+        source.add("Ввести комнату на всех девайсах видеостены");
         source.add("Сделать фото");
         source.add("Запустить видео");
 
@@ -171,38 +172,29 @@ public class Main extends AppCompatActivity {
                 .setStepsViewIndicatorCompleteIcon(ContextCompat.getDrawable(Main.this, R.drawable.round_check))
                 .setStepsViewIndicatorDefaultIcon(ContextCompat.getDrawable(Main.this, R.drawable.round_donut))
                 .setStepsViewIndicatorAttentionIcon(ContextCompat.getDrawable(Main.this, R.drawable.round_error))
-                .setTextSize(15);
+                .setTextSize(20);
 
         verticalStepView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (position == 0 && !isUploaded) {
-                    showFileChooser();
-                    isUploaded = true;
-                } else if (position == 1) {
-                    startActivityForResult(new Intent(Main.this, Camera.class), REQUEST_START_CAMERA_ACTIVITY);
-                }
-
                 if (position < source.size() - 1) {
                     verticalStepView
                             .setStepsViewIndicatorComplectingPosition(position)
+                            .setStepViewTexts(source)
                             .reverseDraw(false);
+                }
+                if (position == 0 && !isUploaded) {
+                    showFileChooser();
+                    isUploaded = true;
+                }
+                if(position == 1)
+                    position++;
+                else if (position == 2) {
+                    startActivityForResult(new Intent(Main.this, Camera.class), REQUEST_START_CAMERA_ACTIVITY);
                 }
             }
         });
         android_id = android.provider.Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
-    }
-
-    class ServiceThread extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            if (!Sync.isStarted)
-                startService(new Intent(Main.this, Sync.class));
-            startService(new Intent(Main.this, Autorun.class));
-            //запуск сервисов
-            return null;
-        }
     }
 }

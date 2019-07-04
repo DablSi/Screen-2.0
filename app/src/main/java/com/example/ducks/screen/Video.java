@@ -47,6 +47,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     private TextureView mTextureView;
     static String path;
     public static SimpleExoPlayer player;
+    boolean syncronized = false;
     private static boolean second = false;
 
 
@@ -241,7 +242,6 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     }
 
     class getPause extends Thread {
-        boolean syncronized = false;
 
         @Override
         public void run() {
@@ -266,16 +266,15 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                                     if (pause) {
                                         player.setPlayWhenReady(false);
                                         player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart);
+                                        syncronized = true;
                                     } else {
                                         player.setPlayWhenReady(true);
                                     }
                                 } else if (!pause && !syncronized) {
-                                    syncronized = true;
                                     if (Math.abs(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 300) {
                                         long delta = ((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition();
-                                        Log.e("TIME", "" + delta);
+                                        Log.e("TIME", "" + delta + " " + syncronized);
                                         player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart + (delta < 0 ? -500 : 300));
-                                        syncronized = false;
                                     }
                                 }
                             }
