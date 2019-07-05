@@ -159,7 +159,6 @@ public class Main extends AppCompatActivity {
         source.add("Выбрать видео");
         source.add("Ввести комнату на всех девайсах видеостены");
         source.add("Сделать фото");
-        source.add("Запустить видео");
 
         verticalStepView.reverseDraw(false)
                 .setStepsViewIndicatorComplectingPosition(position)

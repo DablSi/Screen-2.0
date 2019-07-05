@@ -369,6 +369,14 @@ public class Camera extends AppCompatActivity {
                 }
             }, t - (System.currentTimeMillis() + (int) Sync.deltaT) + 60);
             //настоящее второе фото
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    floatingActionButton.hide();
+                }
+            });
+
         }
     }
 
