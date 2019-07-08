@@ -237,7 +237,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     protected void onDestroy() {
         super.onDestroy();
         player.release();
-        if(progress != null)
+        if (progress != null)
             progress.dismiss();
     }
 
@@ -277,7 +277,8 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                         @Override
                         public void run() {
                             if (pause != null) {
-                                if (pause == player.getPlayWhenReady() && synchronised) {
+                                if (pause == player.getPlayWhenReady()) {
+                                    Log.e("PAUSE", "" + pause);
                                     if (pause) {
                                         player.setPlayWhenReady(false);
                                         player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart);
@@ -285,17 +286,17 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                                     } else {
                                         player.setPlayWhenReady(true);
                                     }
-                                } else if (!pause && !paused) {
-                                    if (Math.abs(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 300 && !synchronised) {
+                                } else if (!pause && !synchronised) {
+                                    if (Math.abs(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 200) {
                                         long delta = ((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition();
                                         Log.e("TIME", "" + delta + " ");
-                                        player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart + (delta < 0 ? -500 : 300));
-                                        if((delta < 350 && delta > 0) || (delta > -350 && delta < 0))
+                                        player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart + (delta < 0 ? -200 : 300));
+                                        if (Math.abs(delta) <= 250)
                                             synchronised = true;
                                     }
                                 }
 
-                                if(synchronised && progress != null) {
+                                if (synchronised && progress != null) {
                                     runOnUiThread(new Runnable() {
                                         @Override
                                         public void run() {

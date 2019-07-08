@@ -41,7 +41,7 @@ public class Main extends AppCompatActivity {
     protected static String android_id;
     private VerticalStepView verticalStepView;
     private static int position = 0;
-    private LinkedList<String> source;
+    private static LinkedList<String> source;
 
     //открывает проводник для выбора файла
     private void showFileChooser() {
@@ -155,10 +155,12 @@ public class Main extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         verticalStepView = findViewById(R.id.steps);
-        source = new LinkedList<>();
-        source.add("Выбрать видео");
-        source.add("Ввести комнату на всех девайсах видеостены");
-        source.add("Сделать фото");
+        if(position == 0) {
+            source = new LinkedList<>();
+            source.add("Выбрать видео");
+            source.add("Ввести комнату на всех девайсах видеостены");
+            source.add("Сделать фото");
+        }
 
         verticalStepView.reverseDraw(false)
                 .setStepsViewIndicatorComplectingPosition(position)
