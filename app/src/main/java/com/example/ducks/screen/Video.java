@@ -184,8 +184,13 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (second)
+                                    if (second) {
                                         new getPause().start();
+                                        if(color2 != 0xffff0000)
+                                            player.setVolume(30);
+                                        else
+                                            player.setVolume(100);
+                                    }
                                     if (!second) {
                                         second = true;
                                         recreate();

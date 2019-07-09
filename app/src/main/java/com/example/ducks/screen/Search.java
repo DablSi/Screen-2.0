@@ -32,7 +32,7 @@ public class Search extends AppCompatActivity {
     private RelativeLayout relativeLayout;
     public static String URL = "https://cloud.itx.ru:444/Server-0.0.2-SNAPSHOT/";
     private String android_id;
-    private int color1, color2;
+    public static int color1, color2;
     public static Integer room;
     private Response<ResponseBody> responseBody;
     public static long timeStart = 0;
