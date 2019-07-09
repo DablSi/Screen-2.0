@@ -3,7 +3,6 @@ package com.example.ducks.screen;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.pm.PackageManager;
 import android.graphics.*;
 import android.media.MediaMetadataRetriever;
@@ -35,6 +34,7 @@ import java.io.FileDescriptor;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import static com.example.ducks.screen.Main.room;
 import static com.example.ducks.screen.Search.*;
 
 public class Video extends Activity implements TextureView.SurfaceTextureListener {
@@ -48,22 +48,14 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     private TextureView mTextureView;
     static String path;
     public static SimpleExoPlayer player;
-    boolean paused = false;
     private static boolean second = false;
-    private ProgressDialog progress;
+    static boolean paused = false;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.texture_video_crop);
-        progress = new ProgressDialog(Video.this);
-        progress.setMessage("Синхронизирую видео");
-        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progress.setIndeterminate(true);
-        progress.setCancelable(false);
-        progress.setProgress(0);
-        progress.show();
         calculateVideoSize();
         if (!second) {
             ax *= mVideoWidth / (double) 100;
@@ -179,7 +171,6 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                 MediaSource videoSource = new ProgressiveMediaSource.Factory(dataSourceFactory)
                         .createMediaSource(Uri.parse(path));
                 player.prepare(videoSource);
-                player.setVolume(0);
 
                 Thread.sleep(100);
 
@@ -193,9 +184,8 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (second) {
+                                    if (second)
                                         new getPause().start();
-                                    }
                                     if (!second) {
                                         second = true;
                                         recreate();
@@ -237,8 +227,6 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     protected void onDestroy() {
         super.onDestroy();
         player.release();
-        if (progress != null)
-            progress.dismiss();
     }
 
     @Override
@@ -255,8 +243,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     }
 
     class getPause extends Thread {
-
-        boolean synchronised = false;
+        boolean syncronized = false;
 
         @Override
         public void run() {
@@ -278,7 +265,6 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                         public void run() {
                             if (pause != null) {
                                 if (pause == player.getPlayWhenReady()) {
-                                    Log.e("PAUSE", "" + pause);
                                     if (pause) {
                                         player.setPlayWhenReady(false);
                                         player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart);
@@ -286,25 +272,14 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                                     } else {
                                         player.setPlayWhenReady(true);
                                     }
-                                } else if (!pause && !synchronised) {
+                                } else if (!pause && !paused) {
+                                    syncronized = true;
                                     if (Math.abs(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 200) {
                                         long delta = ((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition();
-                                        Log.e("TIME", "" + delta + " ");
-                                        player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart + (delta < 0 ? -200 : 300));
-                                        if (Math.abs(delta) <= 250)
-                                            synchronised = true;
+                                        Log.e("TIME", "" + delta);
+                                        player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart + (delta < 0 ? -50 : 50));
+                                        syncronized = false;
                                     }
-                                }
-
-                                if (synchronised && progress != null) {
-                                    runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            progress.dismiss();
-                                            progress = null;
-                                            player.setVolume(100);
-                                        }
-                                    });
                                 }
                             }
                         }
