@@ -4,6 +4,7 @@ import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.*;
 import android.media.MediaMetadataRetriever;
 import android.net.Uri;
@@ -69,16 +70,15 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
 
     //для полноэкранного режима
     public void hideSystemUI() {
+
         View decorView = getWindow().getDecorView();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            decorView.setSystemUiVisibility(
-                    View.SYSTEM_UI_FLAG_IMMERSIVE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-                            | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                            | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                            | View.SYSTEM_UI_FLAG_FULLSCREEN);
-        }
+        decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_IMMERSIVE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN);
     }
 
 
@@ -100,12 +100,19 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
         mTextureView.setSurfaceTextureListener(this);
         Point size = new Point();
         getWindowManager().getDefaultDisplay().getSize(size);
-        mDisplayWidth = size.x;
-        mDisplayHeight = size.y;
+        Resources resources = Video.this.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            mDisplayWidth = size.x;
+            mDisplayHeight = size.y + resources.getDimensionPixelSize(resourceId);
+        } else {
+            mDisplayWidth = size.x;
+            mDisplayHeight = size.y;
+        }
+
 
         updateTextureViewSize();
     }
-
 //    @Override
 //    protected void onDestroy() {
 //        super.onDestroy();
@@ -186,7 +193,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                                 public void run() {
                                     if (second) {
                                         new getPause().start();
-                                        if(color2 != 0xffff0000)
+                                        if (color2 != 0xffff0000)
                                             player.setVolume(30);
                                         else
                                             player.setVolume(100);
