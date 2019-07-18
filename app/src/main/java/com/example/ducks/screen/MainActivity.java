@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 startService(new Intent(MainActivity.this, Sync.class));
             startService(new Intent(MainActivity.this, Autorun.class));
             //запуск сервисов
+            //launch service
             return null;
         }
     }

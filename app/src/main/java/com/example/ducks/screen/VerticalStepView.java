@@ -15,6 +15,13 @@ import android.widget.TextView;
 
 import java.util.List;
 
+/* !!! This class is from this repo
+        https://github.com/baoyachi/StepView
+        with just a few changes
+        (not mine code)
+   !!!
+ */
+
 /**
  * 日期：16/6/24 11:48
  * <p/>

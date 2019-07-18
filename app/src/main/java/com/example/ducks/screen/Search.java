@@ -42,6 +42,7 @@ public class Search extends AppCompatActivity {
     private Service service;
 
     //для полноэкранного режима
+    //for fullscreen mode
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -64,6 +65,7 @@ public class Search extends AppCompatActivity {
         wakeLock = powerManager.newWakeLock(PowerManager.FULL_WAKE_LOCK, "screen:logtag");
         wakeLock.acquire();
         //отключение блокировки экрана
+        //screen lock off
 
         EditText editText = findViewById(R.id.editText);
         relativeLayout = findViewById(R.id.ll);
@@ -71,7 +73,7 @@ public class Search extends AppCompatActivity {
         android_id = android.provider.Settings.Secure.getString(this.getContentResolver(),
                 Settings.Secure.ANDROID_ID);
 
-        FloatingActionButton floatingActionButton = (FloatingActionButton) findViewById(R.id.floatingActionButton);
+        FloatingActionButton floatingActionButton = findViewById(R.id.floatingActionButton);
         floatingActionButton.bringToFront();
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -108,6 +110,7 @@ public class Search extends AppCompatActivity {
                 Response<Integer> response = call.execute();
                 if(response.body() == 0) {
                     //добавление телефона в комнату
+                    //add phone to room
                     Log.d("SEND_AND_RETURN", "Ready.");
                     GetThread getThread = new GetThread();
                     getThread.start();
@@ -140,6 +143,7 @@ public class Search extends AppCompatActivity {
                     Response<Long> userResponse = call.execute();
                     time = userResponse.body();
                     //получение времени изменения цвета
+                    //getting color change time
                     if (time <= System.currentTimeMillis())
                         Thread.sleep(150);
                 } catch (Exception e) {
@@ -170,6 +174,7 @@ public class Search extends AppCompatActivity {
                         Video.ay = coords.y1;
                         Video.by = coords.y2;
                         //получение координат
+                        //get coordinates
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
@@ -184,6 +189,7 @@ public class Search extends AppCompatActivity {
                             Response<Long> response = call.execute();
                             timeStart = response.body();
                             //получение времени начала видео
+                            //get video start time
                             if(timeStart < System.currentTimeMillis())
                                 Thread.sleep(150);
                         }
@@ -213,6 +219,7 @@ public class Search extends AppCompatActivity {
                                     });
                                 }
                                 //начало видео
+                                //start video
                             }
                         }, timeStart - (System.currentTimeMillis() + (int) Sync.deltaT));
 
@@ -242,6 +249,7 @@ public class Search extends AppCompatActivity {
                     VideoThread videoThread = new VideoThread();
                     videoThread.start();
                     //видео получено
+                    //video downloaded
                 }
 
                 @Override
@@ -262,6 +270,7 @@ public class Search extends AppCompatActivity {
                     color1 = colorResponse.body()[0];
                     color2 = colorResponse.body()[1];
                     //получение цветов
+                    //get colors
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
@@ -286,6 +295,9 @@ public class Search extends AppCompatActivity {
     // здесь получала SSLHandshakeException для URL из частного облака https://cloud.itx.ru
     // решение в создании TrustManager который не проверяет цепочку сертификатов HTTPS
     // см https://mobikul.com/android-retrofit-handling-sslhandshakeexception/
+    // here received SSLHandshakeException for URLs from private cloud https://cloud.itx.ru
+    // solution in creating TrustManager that does not check the HTTPS certificate chain
+    // see https://mobikul.com/android-retrofit-handling-sslhandshakeexception/
     public static OkHttpClient.Builder getUnsafeOkHttpClient() {
         try {
             // Create a trust manager that does not validate certificate chains

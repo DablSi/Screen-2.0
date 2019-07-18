@@ -57,6 +57,7 @@ public class Camera extends AppCompatActivity {
     private double videoHeight, videoWidth;
 
     //для полноэкранного режима
+    //For the fullscreen mode
     private void hideSystemUI() {
         View decorView = getWindow().getDecorView();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
@@ -71,6 +72,7 @@ public class Camera extends AppCompatActivity {
     }
 
     //рассчитывает оптимальный размеры для TextureView камеры
+    //calculates optimal sizes of TextureView
     private Size chooseOptimalSize(Size[] outputSizes, int width, int height) {
         double preferredRatio = (double) height / (double) width;
         Size currentOptimalSize = outputSizes[0];
@@ -87,6 +89,7 @@ public class Camera extends AppCompatActivity {
     }
 
     //получение оптимального размера TextureView камеры
+    //getting the optimal size of TextureView
     private void setUpCamera() {
         try {
             for (String cameraId : cameraManager.getCameraIdList()) {
@@ -109,6 +112,7 @@ public class Camera extends AppCompatActivity {
     }
 
     //открытие самой камеры
+    //to open camera
     private void openCamera() {
         try {
             //получение разрешения на открытие
@@ -122,6 +126,7 @@ public class Camera extends AppCompatActivity {
     }
 
     //возобновляет работу камеры
+    //resumes camera work
     private void openBackgroundThread() {
         backgroundThread = new HandlerThread("camera_background_thread");
         backgroundThread.start();
@@ -129,6 +134,7 @@ public class Camera extends AppCompatActivity {
     }
 
     //передает изображение с камеры (превью) на TextureView
+    //camera image (preview) to TextureView
     private void createPreviewSession() {
         try {
             SurfaceTexture surfaceTexture = textureView.getSurfaceTexture();
@@ -139,7 +145,9 @@ public class Camera extends AppCompatActivity {
             captureRequestBuilder.set(CaptureRequest.CONTROL_AE_MODE,
                     CaptureRequest.CONTROL_AE_MODE_ON);
 
-            fixDarkPreview(); //на старых телефонах превью очень темное
+            fixDarkPreview();
+            //на старых телефонах превью очень темное
+            //to fix dark camera preview on old phones
 
             cameraDevice.createCaptureSession(Collections.singletonList(previewSurface),
                     new CameraCaptureSession.StateCallback() {
@@ -177,11 +185,14 @@ public class Camera extends AppCompatActivity {
         hideSystemUI();
         orientationListener = new OrientationListener(Camera.this);
         //для возможности изменения ориентации фотографии без изменения ориентации активности
+        //to change photo orientation without changing orientation of the activity
         floatingActionButton = findViewById(R.id.floatingActionButton);
         if (Main.room < 0) {
             Toast.makeText(Camera.this, "Произошла ошибка! Перезапустите приложение.", Toast.LENGTH_LONG).show();
             //на случай прерывания передачи видео на сервер
             //извините за хардкод
+            //in case of interruption of video transmission to the server
+            //sorry for hardcode
             finish();
         }
         textureView = findViewById(R.id.texture_view);
@@ -235,6 +246,7 @@ public class Camera extends AppCompatActivity {
         ActivityCompat.requestPermissions(Camera.this, new String[]{Manifest.permission.CAMERA,
                 Manifest.permission.WRITE_EXTERNAL_STORAGE}, CAMERA_REQUEST_CODE);
         //запрос разрешений на запись файлов и доступ к камере
+        //request permission to write files and access the camera
 
         calculateVideoSize();
     }
@@ -267,6 +279,7 @@ public class Camera extends AppCompatActivity {
         openBackgroundThread();
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         //блокировка смены ориентации активности
+        //lock orientation change of the activity
 
         if (textureView.isAvailable()) {
             setUpCamera();
@@ -279,13 +292,18 @@ public class Camera extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR); //отключение блокировки ориентации
-        closeCamera(); //освобождение камеры (может работать только в одном приложении одновременно)
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR);
+        //отключение блокировки ориентации
+        //unlock orientation changing
+        closeCamera();
+        //освобождение камеры (может работать только в одном приложении одновременно)
+        //release the camera (can work only in one application at a time)
         closeBackgroundThread();
         orientationListener.disable();
     }
 
     //закрытие камеры
+    //to close camera
     private void closeCamera() {
         if (cameraCaptureSession != null) {
             cameraCaptureSession.close();
@@ -299,6 +317,7 @@ public class Camera extends AppCompatActivity {
     }
 
     //закрытие потока камеры
+    //to close camera thread
     private void closeBackgroundThread() {
         if (backgroundHandler != null) {
             backgroundThread.quitSafely();
@@ -308,12 +327,14 @@ public class Camera extends AppCompatActivity {
     }
 
     //функция, вызываемая при нажатии кнопки фотографирования
+    //on camera button clicked
     public void fab(View view) {
         PhotoThread newThread = new PhotoThread();
         newThread.start();
     }
 
     //делает превью камереры ярче за счет ограничения fps (на старых телефонах превью темное)
+    //makes camera previews brighter due to fps limitation (on old phones the preview is dark)
     private void fixDarkPreview() throws CameraAccessException {
         Range<Integer>[] autoExposureFPSRanges = cameraManager
                 .getCameraCharacteristics(cameraId)
@@ -330,6 +351,7 @@ public class Camera extends AppCompatActivity {
     }
 
     //поток создания фотографий
+    //photo processing thread
     class PhotoThread extends Thread {
 
         @Override
@@ -338,6 +360,7 @@ public class Camera extends AppCompatActivity {
             t = System.currentTimeMillis() + (int) Sync.deltaT + 3000;
             sendThread.start();
             //отправка времени начала фотографирования на сервер
+            //sending time of making photos to the server
             java.util.Timer timer = new java.util.Timer();
 
             timer.schedule(new TimerTask() {
@@ -347,6 +370,7 @@ public class Camera extends AppCompatActivity {
                 }
             }, t - (System.currentTimeMillis() + (int) Sync.deltaT));
             //первое фото
+            //second photo
 
             timer.schedule(new TimerTask() {
                 @Override
@@ -361,6 +385,13 @@ public class Camera extends AppCompatActivity {
                 Крайне суровый способ оптимизации.
                 Третье же фото - настоящее. */
 
+            /*  This photo is not formally saved!
+                It is made to "deceive android."
+                The fact is that from time to time he is lazy to take two photos with such a small interval.
+                And instead of the second photo gives the first one.
+                Extremely harsh way to optimize.
+                The third photo is the present. */
+
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
@@ -369,6 +400,7 @@ public class Camera extends AppCompatActivity {
                 }
             }, t - (System.currentTimeMillis() + (int) Sync.deltaT) + 60);
             //настоящее второе фото
+            //real second photo
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -393,7 +425,9 @@ public class Camera extends AppCompatActivity {
 
             Call<Integer> call = service.putDevice(android_id, Main.room, t);
             try {
-                call.execute(); //отправка времени фотографирования на сервер
+                call.execute();
+                //отправка времени фотографирования на сервер
+                //sending time of making photos to the server
                 Log.d("SEND_AND_RETURN", "" + (t - (System.currentTimeMillis() + (int) Sync.deltaT)));
             } catch (IOException e) {
                 e.printStackTrace();
@@ -403,6 +437,8 @@ public class Camera extends AppCompatActivity {
 
     //сохранение фотографий в памяти телефона
     //!!!данная функция используется только для тестов!!!
+    //store photos in the phone’s memory
+    //!!! this function is used only for tests !!!
     void bitmapUpload(Bitmap b, int i) {
         try {
             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -418,7 +454,9 @@ public class Camera extends AppCompatActivity {
     }
 
     //скачивание фотографий из памяти телефона
-    //!!данная функция используется только для тестов!!!
+    //!!!данная функция используется только для тестов!!!
+    //download photos from phone’s memory
+    //!!! This function is used only for tests !!!
     Bitmap bitmapDownload(int i) {
         File storageDirectory = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
         File file = new File(storageDirectory, "Screen" + i + ".png");
@@ -441,18 +479,17 @@ public class Camera extends AppCompatActivity {
             bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
             bitmap2 = Bitmap.createBitmap(bitmap2, 0, 0, bitmap2.getWidth(), bitmap2.getHeight(), matrix, true);
             //переворот фотографии в соответствии с ориентацией телефона
-
-
+            //flip the photo according to the orientation of the phone
 
             /*bitmap = bitmapDownload(1);
             bitmap2 = bitmapDownload(2);
 
-            !!!этот код используется только для тестирования!!!*/
+            !!! This code is used only for testing !!! */
 
             bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 8, bitmap.getHeight() / 8, false);
             bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap2.getWidth() / 8, bitmap2.getHeight() / 8, false);
             //пропорциональное уменьшение размеров фотографий для более быстрой их обработки
-
+            //proportional resizing of photos for faster processing
 
             if (bitmap.getWidth() >= videoWidth || bitmap.getHeight() >= videoHeight) {
                 double ratioX = (float) (bitmap.getWidth() / videoWidth),
@@ -473,6 +510,7 @@ public class Camera extends AppCompatActivity {
             Bitmap bitmap3 = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
             bitmap3 = bitmap3.copy(Bitmap.Config.ARGB_8888, true);
             //битмап для записи результатов обработки фотографий
+            //bitmap for photo processing results
 
             Retrofit retrofit = new Retrofit.Builder()
                     .baseUrl(URL)
@@ -485,7 +523,9 @@ public class Camera extends AppCompatActivity {
             int[] colors = new int[0];
             try {
                 Response<int[]> response = colorCall.execute();
-                colors = response.body(); //получение массива возможных цветов
+                colors = response.body();
+                //получение массива возможных цветов
+                //getting an array of possible colors
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -497,6 +537,8 @@ public class Camera extends AppCompatActivity {
                 indexes = response.body();
                 //получение последней комбинации цветов в этой комнате
                 //комбинации идут последовательно, поэтому из последней комбинации можно получить и все остальные
+                // get the last color combination in this room
+                // combinations go successively, therefore all the rest can be obtained from the last combination
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -511,6 +553,8 @@ public class Camera extends AppCompatActivity {
             TreeMap<Integer, TreeMap<Integer, LinkedList<Point>>> points = new TreeMap<>();
             //структура, в которую добавляются все точки каждой комбинации цветов
             //для дальнейшего определения координат экранов
+            // structure to which all points of each color combination are added
+            // to determine the coordinates of the phones
             for (int k = 0; k <= indexes[0]; k++) {
                 points.put(k, new TreeMap<>());
                 if (k + 1 > indexes[0]) {
@@ -528,20 +572,25 @@ public class Camera extends AppCompatActivity {
                 }
             }
             //заполнение этой структуры
+            // fill this structure
 
             for (int i = 0; i < bitmap.getHeight(); i++) {
                 for (int j = 0; j < bitmap.getWidth(); j++) {
-                    bitmap3.setPixel(j, i, UNKNOWN); //заполнение фоновым цветом
+                    bitmap3.setPixel(j, i, UNKNOWN);
+                    //заполнение фоновым цветом
+                    //fill with background color
 
                     Integer first = bitmap.getPixel(j, i);
                     Integer second = bitmap2.getPixel(j, i);
 
                     //проверка на то, что цвет изменился на второй картинке
+                    // check that the color changes on the second image
                     if (comparePixel(first, second)) {
 
                         first = testColor(Color.red(first), Color.green(first), Color.blue(first));
                         second = testColor(Color.red(second), Color.green(second), Color.blue(second));
                         //определение цвета, который ближе всего к данному
+                        // define the color that is closest to this
 
                         int ind1 = 0;
                         for (int k = 0; k < colors.length; k++) {
@@ -558,10 +607,12 @@ public class Camera extends AppCompatActivity {
                             }
                         }
                         //получение индексов такой комбинации цветов
+                        // getting indices of such colors combination
 
                         if (ind1 == ind2 || ind1 >= points.size() || points.get(ind1).size() < ind2)
                             continue;
                         //проверка на существование такой комбинации в этой комнате
+                        // check for such combination in this room
 
                         points.get(ind1).get(ind2).add(new Point(j, i));
                         bitmap3.setPixel(j, i, second);
@@ -579,9 +630,12 @@ public class Camera extends AppCompatActivity {
                     }
                 });
             }
-            //в случае неудачного распознования
+            //в случае неудачного распознавания
+            //in case of unsuccessful recognition
 
-            denoise(bitmap3); //устранение шумов
+            denoise(bitmap3);
+            //устранение шумов
+            //remove noise
 
             runOnUiThread(new Runnable() {
                 @Override
@@ -619,6 +673,7 @@ public class Camera extends AppCompatActivity {
                         }
                     }
                     //удаление точек, оказавшихся шумом
+                    //remove noise points
 
                     if (linkedList.size() > 0) {
                         Collections.sort(linkedList, xComparator);
@@ -633,6 +688,7 @@ public class Camera extends AppCompatActivity {
                         right /= ((double) bitmap.getWidth() / (double) 100);
                         down /= ((double) bitmap.getHeight() / (double) 100);
                         //перевод в проценты
+                        // translated into percentages
 
                         Log.d("Coords", left + ";" + up + " " + right + ";" + down);
 
@@ -651,6 +707,7 @@ public class Camera extends AppCompatActivity {
             setResult(REQUEST_START_CAMERA_ACTIVITY);
             finish();
             //удачное завершение активности
+            // successful completion of the activity
         }
 
     }
@@ -665,12 +722,15 @@ public class Camera extends AppCompatActivity {
 
     //реализация метода размыкания(Opening)
     //https://habr.com/ru/company/yandex/blog/254955/ - ресурс, который помог с этим разобраться
+    // implementation of the opening method (Opening)
+    //https://habr.com/ru/company/yandex/blog/254955/ - a resource that helped with this (on russian language)
     public void denoise(Bitmap arr) {
         erosion(arr);
         dilating(arr);
     }
 
     //реализация метода эрозии(сужения) (один из основных методов мат. морфологии)
+    // implementation of the method of erosion(contraction) (one of the main methods of mathematical morphology)
     public void erosion(Bitmap arr) {
         Bitmap arr_ = arr.createBitmap(arr.getWidth(), arr.getHeight(), Bitmap.Config.ARGB_8888);
         arr_ = arr_.copy(Bitmap.Config.ARGB_8888, true);
@@ -698,6 +758,7 @@ public class Camera extends AppCompatActivity {
     }
 
     //реализация метода расширения (один из основных методов мат. морфологии)
+    // implementation of the extension method (one of the main methods of mathematical morphology)
     public void dilating(Bitmap arr) {
         Bitmap arr_ = arr.createBitmap(arr.getWidth(), arr.getHeight(), Bitmap.Config.ARGB_8888);
         arr_ = arr_.copy(Bitmap.Config.ARGB_8888, true);
@@ -721,6 +782,7 @@ public class Camera extends AppCompatActivity {
 
 
     //проверка на наличие кардинального изменения цвета
+    //check for a dramatic change in color
     public boolean comparePixel(int pix1, int pix2) {
         int dR = Math.abs(Color.red(pix1) - Color.red(pix2));
         int dG = Math.abs(Color.green(pix1) - Color.green(pix2));
@@ -733,8 +795,11 @@ public class Camera extends AppCompatActivity {
         int percentG = (int) ((double) G / ((double) (R + G + B) / (double) 100));
         int percentB = (int) ((double) B / ((double) (R + G + B) / (double) 100));
         //процентное соотношениие цветов
+        //percentage of colors
 
-        double deviation = 0.2; //% отклонения
+        double deviation = 0.2;
+        //% отклонения
+        //% deviation
 
         if (R < 30 && G < 30 && B < 30) return Color.BLACK;
         if (R > 60 && G > 60 && B > 60) return Color.WHITE;
@@ -742,11 +807,14 @@ public class Camera extends AppCompatActivity {
         if (percentG > 40 && G > R + R * deviation && G > B + B * deviation) return Color.GREEN;
         if (percentB > 40 && B > G + G * deviation && B > R + R * deviation) return Color.BLUE;
         // Цвет неизвестен
+        // unknown color
         return UNKNOWN;
     }
 
     /* При изменении ориентации активности на горизонтальную, превью серьезно искривляется.
      *  Поэтому определяется сам градус наклона, чтобы при повороте перевернуть кнопку и само изображение на выходе. */
+    /* When you change the orientation of the activity on the horizontal, the preview seriously bends
+      * Therefore, the degree of inclination itself is determined in order to turn the button and the image itself at the output while turning. */
     private class OrientationListener extends OrientationEventListener {
         final int ROTATION_O = 1;
         final int ROTATION_90 = 2;
@@ -760,17 +828,25 @@ public class Camera extends AppCompatActivity {
 
         @Override
         public void onOrientationChanged(int orientation) {
-            if (((orientation < 35 && orientation > 0) || orientation > 325) && rotation != ROTATION_O) { //Портретная ориентация
+            if (((orientation < 35 && orientation > 0) || orientation > 325) && rotation != ROTATION_O) {
+                //Портретная ориентация
+                //Portrait orientation
                 rotation = ROTATION_O;
                 rotate = 0;
-            } else if (orientation > 55 && orientation < 125 && rotation != ROTATION_270) { //Реверсивная горизонтальная
+            } else if (orientation > 55 && orientation < 125 && rotation != ROTATION_270) {
+                //Реверсивная горизонтальная
+                //Reverse horizontal
                 rotation = ROTATION_270;
                 rotate = 90;
-            } else if (orientation > 235 && orientation < 305 && rotation != ROTATION_90) { //Горизонтальная
+            } else if (orientation > 235 && orientation < 305 && rotation != ROTATION_90) {
+                //Горизонтальная
+                //Horizontal
                 rotation = ROTATION_90;
                 rotate = -90;
             }
-            floatingActionButton.setRotation(-rotate); //Переворот кнопки
+            floatingActionButton.setRotation(-rotate);
+            //Переворот кнопки
+            //Button rotation
         }
     }
 }

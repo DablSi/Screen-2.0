@@ -9,6 +9,7 @@ import android.util.Log;
 public class Autorun extends BroadcastReceiver {
 
     //Запуск сервиса Sync при перезагрузке телефона (для того, чтобы успеть синхронизировать)
+    //Sync service launch on phone reboot (to synchronize them)
     @Override
     public void onReceive(Context context, Intent arg1) {
         Intent intent = new Intent(context, Sync.class);
@@ -17,6 +18,6 @@ public class Autorun extends BroadcastReceiver {
         } else {
             context.startService(intent);
         }
-        Log.i("Autostart", "started");
+        Log.i("Autorun", "started");
     }
 }

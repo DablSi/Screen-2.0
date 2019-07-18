@@ -39,7 +39,6 @@ import static com.example.ducks.screen.Main.room;
 import static com.example.ducks.screen.Search.*;
 
 public class Video extends Activity implements TextureView.SurfaceTextureListener {
-    // Log тэг
     private static final String TAG = Video.class.getName();
     private double mVideoWidth;
     private double mVideoHeight;
@@ -65,10 +64,12 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
             by *= mVideoHeight / (double) 100;
         }
         //перевод координат из процентов
+        //transfer of coordinates from percent
         initView();
     }
 
     //для полноэкранного режима
+    //for the fullscreen mode
     public void hideSystemUI() {
 
         View decorView = getWindow().getDecorView();
@@ -83,6 +84,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
 
 
     //для неполноэкранного режима
+    //show navigation bar & etc
     private void showSystemUI() {
         View decorView = getWindow().getDecorView();
         decorView.setSystemUiVisibility(
@@ -92,6 +94,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     }
 
     //подготовка TextureView
+    //prepare TextureView
     @SuppressLint("ClickableViewAccessibility")
     private void initView() {
         hideSystemUI();
@@ -113,18 +116,9 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
 
         updateTextureViewSize();
     }
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//        if (mMediaPlayer != null) {
-//            // Освобождаем ресурсы
-//            mMediaPlayer.stop();
-//            mMediaPlayer.release();
-//            mMediaPlayer = null;
-//        }
-//    }
 
     //получение размеров видеофайла
+    //get video file sizes
     private void calculateVideoSize() {
         try {
             FileDescriptor fd = new FileInputStream(path).getFD();
@@ -146,6 +140,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
 
 
     //обрезка видео путем изменения размеров TextureView
+    //trim video by changing TextureView
     private void updateTextureViewSize() {
         double scaleX = mDisplayWidth / mVideoWidth, scaleY = mDisplayHeight / mVideoHeight;
         double scale = mDisplayHeight / Math.abs(by - ay);
@@ -167,7 +162,9 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                         1);
-            } //получение разрешений
+            }
+            //получение разрешений
+            //get permissions
 
             player = ExoPlayerFactory.newSimpleInstance(Video.this);
             player.setVideoSurface(surface);
@@ -272,6 +269,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                     Response<Boolean> response = call.execute();
                     Boolean pause = response.body();
                     //получение паузы
+                    //get pause
                     runOnUiThread(new Runnable() {
                         @Override
                         public void run() {

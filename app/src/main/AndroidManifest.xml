@@ -37,8 +37,6 @@
                 android:name="org.apache.http.legacy"
                 android:required="false"/>
 
-        <activity android:name=".Timer">
-        </activity>
         <activity android:name=".Video">
         </activity>
 

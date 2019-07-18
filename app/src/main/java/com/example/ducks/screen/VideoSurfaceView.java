@@ -7,6 +7,8 @@ import android.view.SurfaceView;
 
 //данный класс не используется и является запасным прототипом
 //на случай, если данной синхронизации видео будет недостаточно
+// !!! this class is not used and is a spare prototype
+// !!! in case this video sync is not enough
 public class VideoSurfaceView extends SurfaceView implements SurfaceHolder.Callback {
 
     private DrawThread drawThread;

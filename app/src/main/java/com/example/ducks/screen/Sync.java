@@ -17,7 +17,7 @@ import java.util.TimerTask;
 
 import static java.lang.Math.abs;
 
-
+//synchronization class
 public class Sync extends Service {
 
     public static final String SYNC = "Sync";
@@ -42,6 +42,7 @@ public class Sync extends Service {
         syncThread = new SyncThread();
         syncThread.execute();
         //получение прошлой дельты из sharedPreferences
+        //get last delta from sharedPreferences
         new Timer().schedule(new TimerTask() {
             @Override
             public void run() {
@@ -52,6 +53,7 @@ public class Sync extends Service {
             }
         }, 5000, 5000);
         //сохранение дельты в sharedPreferences для быстрой повторной синхронизации
+        //save delta to sharedPreferences for fast re-sync
     }
 
 
@@ -88,6 +90,7 @@ public class Sync extends Service {
             }
             Log.d("Everything is fine: ", "Connected");
             //успешное подключение к серверу
+            //successfully connected to the server
             DataInputStream input = null;
             DataOutputStream outputStream = null;
             try {
@@ -108,6 +111,7 @@ public class Sync extends Service {
                     D = newD;
                     deltaT += (float) D / 10;
                     //получение дельты времени
+                    //get time delta
                     if (t1 % 2 == 0) Log.d(SYNC, "delta is " + (int) deltaT);
                     Thread.sleep(200);
                 }
@@ -116,6 +120,7 @@ public class Sync extends Service {
                 e.printStackTrace();
             } finally {
                 // закрытие соединенеия
+                // close connection
                 try {
                     input.close();
                     socket.close();

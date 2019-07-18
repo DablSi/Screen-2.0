@@ -60,6 +60,7 @@ public class Control extends AppCompatActivity {
             try {
                 call.execute();
                 //отправка времени
+                //send time
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -79,6 +80,7 @@ public class Control extends AppCompatActivity {
             try {
                 call.execute();
                 //отправка паузы
+                //send pause
             } catch (Exception e) {
                 e.printStackTrace();
             }

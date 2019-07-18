@@ -44,6 +44,7 @@ public class Main extends AppCompatActivity {
     private static LinkedList<String> source;
 
     //открывает проводник для выбора файла
+    // opens explorer to select file
     private void showFileChooser() {
         Intent intent = new Intent();
         intent.setType("video/*");
@@ -52,6 +53,7 @@ public class Main extends AppCompatActivity {
     }
 
     //открывает таймер, если фото было удачным
+    //opens the timer if the photo was successful
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == RESULT_OK) {
             if (requestCode == REQUEST_TAKE_GALLERY_VIDEO) {
@@ -83,9 +85,13 @@ public class Main extends AppCompatActivity {
             Call<Integer> integerCall = service.getRoom();
             try {
                 Response<Integer> integerResponse = integerCall.execute();
-                room = integerResponse.body(); //получение номера комнаты
+                room = integerResponse.body();
+                //получение номера комнаты
+                //get room number
                 Call<Integer> call = service.putDevice(android_id, room, null);
-                call.execute(); //создание комнаты
+                call.execute();
+                //создание комнаты
+                //create room
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -99,6 +105,7 @@ public class Main extends AppCompatActivity {
             RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
             MultipartBody.Part fileToUpload = MultipartBody.Part.createFormData("video", file.getName(), requestBody);
             //загрузка видео на сервер
+            //upload video to the server
             service.uploadVideo(fileToUpload, room).enqueue(new Callback<Void>() {
 
                 @Override
@@ -128,6 +135,7 @@ public class Main extends AppCompatActivity {
     }
 
     //получение пути из URI
+    //get the path from URI
     private String getPath(Uri uri) {
         if ("content".equalsIgnoreCase(uri.getScheme())) {
             String[] projection = {MediaStore.Video.Media.DISPLAY_NAME};
