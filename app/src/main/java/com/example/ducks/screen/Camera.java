@@ -370,7 +370,7 @@ public class Camera extends AppCompatActivity {
                 }
             }, t - (System.currentTimeMillis() + (int) Sync.deltaT));
             //первое фото
-            //second photo
+            //first photo
 
             timer.schedule(new TimerTask() {
                 @Override
@@ -390,7 +390,7 @@ public class Camera extends AppCompatActivity {
                 The fact is that from time to time he is lazy to take two photos with such a small interval.
                 And instead of the second photo gives the first one.
                 Extremely harsh way to optimize.
-                The third photo is the present. */
+                The third photo is the real new photo. */
 
             timer.schedule(new TimerTask() {
                 @Override
@@ -489,7 +489,7 @@ public class Camera extends AppCompatActivity {
             bitmap = Bitmap.createScaledBitmap(bitmap, bitmap.getWidth() / 8, bitmap.getHeight() / 8, false);
             bitmap2 = Bitmap.createScaledBitmap(bitmap2, bitmap2.getWidth() / 8, bitmap2.getHeight() / 8, false);
             //пропорциональное уменьшение размеров фотографий для более быстрой их обработки
-            //proportional resizing of photos for faster processing
+            //proportional resizing of photos for faster denoise processing (morphological opening)
 
             if (bitmap.getWidth() >= videoWidth || bitmap.getHeight() >= videoHeight) {
                 double ratioX = (float) (bitmap.getWidth() / videoWidth),

@@ -118,7 +118,7 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     }
 
     //получение размеров видеофайла
-    //get video file sizes
+    //get video sizes (width & height)
     private void calculateVideoSize() {
         try {
             FileDescriptor fd = new FileInputStream(path).getFD();
