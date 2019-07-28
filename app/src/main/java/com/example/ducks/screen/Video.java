@@ -106,8 +106,8 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
         Resources resources = Video.this.getResources();
         int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
         if (resourceId > 0) {
-            mDisplayWidth = size.x;
-            mDisplayHeight = size.y + resources.getDimensionPixelSize(resourceId);
+            mDisplayWidth = size.x + (resources.getConfiguration().orientation == 2 ? resources.getDimensionPixelSize(resourceId) : 0);
+            mDisplayHeight = size.y + (resources.getConfiguration().orientation == 1 ? resources.getDimensionPixelSize(resourceId) : 0);
         } else {
             mDisplayWidth = size.x;
             mDisplayHeight = size.y;
