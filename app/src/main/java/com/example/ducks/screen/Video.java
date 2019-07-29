@@ -284,17 +284,17 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                                     }
                                 } else if (!pause && !paused) {
                                     syncronized = true;
-                                    if (Math.abs(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 200) {
+                                    if (Math.abs(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 150) {
                                         long delta = ((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition();
                                         Log.e("TIME", "" + delta);
-                                        player.seekTo((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart + (delta < 0 ? -50 : 50));
+                                        player.seekTo(player.getCurrentPosition() + delta / 10);
                                         syncronized = false;
                                     }
                                 }
                             }
                         }
                     });
-                    Thread.sleep(50);
+                    Thread.sleep(300);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

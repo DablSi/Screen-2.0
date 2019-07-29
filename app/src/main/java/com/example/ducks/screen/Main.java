@@ -100,6 +100,12 @@ public class Main extends AppCompatActivity {
                 });
             } catch (Exception e) {
                 e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(Main.this, "Проверьте подключение к интернету", Toast.LENGTH_LONG).show();
+                    }
+                });
             }
             File file = new File(Video.path);
             RequestBody requestBody = RequestBody.create(MediaType.parse("*/*"), file);
