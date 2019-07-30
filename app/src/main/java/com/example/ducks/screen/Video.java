@@ -48,7 +48,6 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
     private TextureView mTextureView;
     static String path;
     public static SimpleExoPlayer player;
-    private static boolean second = false;
     static boolean paused = false;
 
 
@@ -57,12 +56,10 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.texture_video_crop);
         calculateVideoSize();
-        if (!second) {
-            ax *= mVideoWidth / (double) 100;
-            ay *= mVideoHeight / (double) 100;
-            bx *= mVideoWidth / (double) 100;
-            by *= mVideoHeight / (double) 100;
-        }
+        ax *= mVideoWidth / (double) 100;
+        ay *= mVideoHeight / (double) 100;
+        bx *= mVideoWidth / (double) 100;
+        by *= mVideoHeight / (double) 100;
         //перевод координат из процентов
         //transfer of coordinates from percent
         initView();
@@ -178,8 +175,6 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
 
                 Thread.sleep(100);
 
-                if (!second)
-                    player.setPlayWhenReady(true);
                 player.addListener(new Player.EventListener() {
                     @Override
                     public void onPlayerStateChanged(boolean playWhenReady, int playbackState) {
@@ -188,17 +183,11 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                             runOnUiThread(new Runnable() {
                                 @Override
                                 public void run() {
-                                    if (second) {
-                                        new getPause().start();
-                                        if (color2 != 0xffff0000)
-                                            player.setVolume(30);
-                                        else
-                                            player.setVolume(100);
-                                    }
-                                    if (!second) {
-                                        second = true;
-                                        recreate();
-                                    }
+                                    new getPause().start();
+                                    if (color2 != 0xffff0000)
+                                        player.setVolume(30);
+                                    else
+                                        player.setVolume(100);
                                 }
                             });
                         }
@@ -282,12 +271,13 @@ public class Video extends Activity implements TextureView.SurfaceTextureListene
                                     } else {
                                         player.setPlayWhenReady(true);
                                     }
-                                } else if (!pause && !paused) {
+                                } else if (!pause && !paused && !syncronized) {
                                     syncronized = true;
-                                    if (Math.abs(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 150) {
+                                    if ((((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) < -50 ||
+                                            (((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition()) > 150) {
                                         long delta = ((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart) - player.getCurrentPosition();
                                         Log.e("TIME", "" + delta);
-                                        player.seekTo(player.getCurrentPosition() + delta / 10);
+                                        player.seekTo(((System.currentTimeMillis() + (int) Sync.deltaT) - timeStart + delta / 10));
                                         syncronized = false;
                                     }
                                 }
